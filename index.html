@@ -119,6 +119,25 @@ td.mono{font-family:var(--mono);color:var(--text)}
 .gl details[open] summary::after{content:"−"}
 .gl details p{margin-top:6px;font-size:14.5px;line-height:1.55}
 .gl{align-self:start}
+.guic .path{font-family:var(--mono);font-size:12px;color:var(--info);margin:-2px 0 10px}
+.guic .labtask{margin-top:10px;font-size:14px}
+.guic .labtask b{color:var(--ok)}
+.shot{margin-top:14px;border:1px dashed var(--line2);border-radius:8px;height:120px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--dim);background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(255,255,255,.015) 10px,rgba(255,255,255,.015) 20px)}
+.clilist{display:grid;gap:12px}
+.clig{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 20px}
+.clig summary{cursor:pointer;padding:16px 0;list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.clig summary::-webkit-details-marker{display:none}
+.clig summary span{font-weight:600;font-size:17px}
+.clig summary span::before{content:"▸ ";color:var(--accent);font-family:var(--mono)}
+.clig[open] summary span::before{content:"▾ "}
+.clig summary small{color:var(--muted);font-size:14px}
+.cmd{position:relative;border-top:1px solid var(--line);padding:14px 0}
+.cmd pre{background:#070a0e;border:1px solid var(--line);border-radius:8px;padding:12px 70px 12px 14px;overflow-x:auto;font-family:var(--mono);font-size:13px;color:var(--ok);line-height:1.6}
+.cmd.warn pre{color:var(--warn);border-color:rgba(245,197,66,.35)}
+.cmd p{color:var(--muted);font-size:14.5px;margin-top:8px}
+.cp{position:absolute;top:22px;right:8px;font-family:var(--mono);font-size:11px;background:var(--bg2);color:var(--muted);border:1px solid var(--line2);border-radius:5px;padding:3px 8px;cursor:pointer}
+.cp:hover{color:var(--text)}
+code{font-family:var(--mono);color:var(--accent2);font-size:.92em}
 footer{border-top:1px solid var(--line);padding:36px 0 48px;color:var(--dim);font-size:13.5px;font-family:var(--mono)}
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 </style>
@@ -131,6 +150,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <ul>
       <li><a href="#fortigate">FortiGate 1100E</a></li>
       <li><a href="#slownik">Słowniczek</a></li>
+      <li><a href="#gui">GUI</a></li>
+      <li><a href="#cli">CLI</a></li>
       <li><a href="#porownanie">Porównanie</a></li>
       <li><a href="#topologia">Topologia</a></li>
       <li><a href="#scenariusze">Scenariusze</a></li>
@@ -247,9 +268,91 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   </div>
 </section>
 
+<section id="gui">
+  <div class="wrap">
+    <div class="eyebrow">// 03 · PRZEWODNIK PO GUI</div>
+    <h2>Menu FortiOS krok po kroku</h2>
+    <p class="sub">FortiGate-VM w labie ma ten sam interfejs FortiOS co urządzenia sprzętowe, w tym 1100E. Poniżej jest opis menu w kolejności, w jakiej widać je w panelu, wraz z zadaniem do wykonania w labie. Część menu jest domyślnie ukryta. Włącza się je w <b>System → Feature Visibility</b>.</p>
+    <div class="grid g2">
+<div class="card guic"><span class="ico">01</span><h3>Dashboard</h3><div class="path">Dashboard → Status / Security / Network / Users &amp; Devices</div><p>Ekran startowy z widżetami: informacje o systemie (model, wersja FortiOS, licencje), zużycie CPU i pamięci, liczba sesji, ruch na interfejsach, najaktywniejsze źródła i aplikacje (FortiView). Widżety można dodawać i układać.</p><p class="labtask"><b>W labie:</b> Sprawdzić wersję FortiOS, licencję ewaluacyjną i obciążenie VM.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">02</span><h3>Security Fabric</h3><div class="path">Security Fabric → Physical / Logical Topology, Fabric Connectors, Automation, Security Rating</div><p>Mapa urządzeń i sieci podłączonych do FortiGate&#x27;a, integracje z innymi systemami (np. chmura, SDN, Active Directory), automatyzacja (wyzwalacz → akcja, np. e-mail po wykryciu ataku) i ocena konfiguracji według dobrych praktyk.</p><p class="labtask"><b>W labie:</b> Uruchomić Security Rating i poprawić wskazane problemy, dodać automatyzację z powiadomieniem.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">03</span><h3>Network</h3><div class="path">Network → Interfaces, DNS, SD-WAN, Static Routes, Policy Routes, OSPF / BGP, Packet Capture, Diagnostics</div><p>Konfiguracja interfejsów fizycznych i VLAN-ów (adres IP, rola, dozwolony dostęp administracyjny: HTTPS, SSH, PING, SNMP), DNS, routing statyczny i dynamiczny, SD-WAN oraz przechwytywanie pakietów z poziomu GUI.</p><p class="labtask"><b>W labie:</b> Nadać aliasy portom (WAN, MGMT, K3S-MONITORING, OPENSTACK, DMZ), utworzyć trasy i zrobić Packet Capture ruchu do k3s.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">04</span><h3>Policy &amp; Objects</h3><div class="path">Policy &amp; Objects → Firewall Policy, Addresses, Services, Schedules, Virtual IPs, IP Pools, Traffic Shaping</div><p>Serce firewalla. Reguły (skąd, dokąd, jaka usługa, akcja, NAT, profile bezpieczeństwa) oraz obiekty, z których są budowane: adresy i grupy adresów, usługi, harmonogramy. Virtual IPs służą do publikacji usług z wnętrza sieci (port-forward).</p><p class="labtask"><b>W labie:</b> Utworzyć obiekty segmentów, reguły między strefami z domyślnym deny i VIP do Ingress w k3s.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">05</span><h3>Security Profiles</h3><div class="path">Security Profiles → AntiVirus, Web Filter, DNS Filter, Application Control, Intrusion Prevention, File Filter, SSL/SSH Inspection</div><p>Profile, które podpina się do reguł firewalla. Określają, co sprawdzać w dozwolonym ruchu: wirusy, kategorie stron, zapytania DNS, aplikacje, sygnatury ataków, typy plików, oraz czy odszyfrowywać SSL/TLS.</p><p class="labtask"><b>W labie:</b> Zbudować profil IPS dla DMZ i sprawdzić blokadę na teście EICAR i skanie nmap.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">06</span><h3>VPN</h3><div class="path">VPN → IPsec Tunnels, IPsec Wizard, VPN Location Map</div><p>Tunele IPsec: kreator dla typowych scenariuszy (site-to-site, dostęp zdalny dla FortiClient) i tryb własny z pełną kontrolą nad fazą 1 (IKE) i fazą 2 (selektory ruchu). Lista tuneli pokazuje ich stan i przesłane dane.</p><p class="labtask"><b>W labie:</b> Zestawić tunel IKEv2 FortiGate ↔ Sophos i dostęp zdalny dla FortiClient.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">07</span><h3>User &amp; Authentication</h3><div class="path">User &amp; Authentication → User Definition, User Groups, LDAP Servers, RADIUS Servers, FortiTokens, Authentication Settings</div><p>Lokalni użytkownicy i grupy, podłączenie do zewnętrznych katalogów (LDAP / Active Directory, RADIUS), tokeny MFA. Grupy wykorzystuje się w regułach firewalla i w VPN.</p><p class="labtask"><b>W labie:</b> Utworzyć lokalną grupę VPN-LAB i przypisać ją do dostępu zdalnego.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">08</span><h3>WiFi &amp; Switch Controller</h3><div class="path">WiFi &amp; Switch Controller → FortiLink Interface, Managed FortiSwitches, Managed FortiAPs, SSIDs</div><p>Zarządzanie przełącznikami FortiSwitch i punktami dostępowymi FortiAP bezpośrednio z FortiGate&#x27;a. W labie bez fizycznego sprzętu menu służy głównie do zapoznania się z opcjami.</p><p class="labtask"><b>W labie:</b> Tylko przegląd (brak sprzętu w labie).</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">09</span><h3>System</h3><div class="path">System → Administrators, Admin Profiles, Firmware &amp; Registration, Settings, HA, SNMP, Certificates, FortiGuard, Feature Visibility</div><p>Ustawienia samego urządzenia: konta administratorów i ich uprawnienia, aktualizacja firmware, nazwa hosta, NTP, strefa czasowa, klaster HA, SNMP, certyfikaty, aktualizacje FortiGuard. W Feature Visibility włącza się ukryte domyślnie menu (np. routing dynamiczny, VDOM-y).</p><p class="labtask"><b>W labie:</b> Utworzyć osobne konto administratora z profilem tylko do odczytu, włączyć SNMP dla Zabbix, ustawić NTP.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+<div class="card guic"><span class="ico">10</span><h3>Log &amp; Report</h3><div class="path">Log &amp; Report → Forward Traffic, Local Traffic, System Events, Security Events, Log Settings</div><p>Przeglądanie logów: ruch przechodzący przez firewall (Forward), ruch do samego urządzenia (Local), zdarzenia systemowe i bezpieczeństwa (IPS, AV, Web Filter). W Log Settings ustawia się wysyłkę logów na zewnątrz (syslog, FortiAnalyzer).</p><p class="labtask"><b>W labie:</b> Wysłać logi przez syslog do stosu monitoringu w segmencie K3S-MONITORING.</p><div class="shot">zrzut z labu FortiGate-VM: wkrótce</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="cli">
+  <div class="wrap">
+    <div class="eyebrow">// 04 · PRZEWODNIK PO CLI</div>
+    <h2>Najważniejsze polecenia CLI</h2>
+    <p class="sub">CLI dostępne jest przez SSH, konsolę lub ikonę <b>&gt;_</b> w prawym górnym rogu GUI. Zasada: <code>get</code> i <code>show</code> tylko czytają, <code>config</code> zmienia konfigurację, <code>execute</code> wykonuje akcje, <code>diagnose</code> służy do diagnostyki. Adresy w przykładach pochodzą z labu. Polecenia oznaczone ⚠ przerywają pracę lub usuwają dane.</p>
+    <div class="clilist">
+<details class="clig"><summary><span>Status i sprzęt</span><small>Pierwsze polecenia po zalogowaniu</small></summary><div class="cmd"><pre><code>get system status</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Model, wersja FortiOS, numer seryjny, licencja, tryb pracy.</p></div><div class="cmd"><pre><code>get system performance status</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Zużycie CPU i pamięci, liczba sesji, uptime.</p></div><div class="cmd"><pre><code>diagnose sys top 5 20</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Procesy najbardziej obciążające CPU (odświeżanie co 5 s, 20 pozycji). Wyjście: q.</p></div><div class="cmd"><pre><code>get system interface physical</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Stan fizyczny portów: link, prędkość, duplex.</p></div><div class="cmd"><pre><code>diagnose hardware deviceinfo nic port1</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Szczegóły karty sieciowej: liczniki błędów, MAC, prędkość.</p></div></details>
+<details class="clig"><summary><span>Konfiguracja: składnia</span><small>Każda zmiana w CLI ma tę samą strukturę: config → edit → set → next → end</small></summary><div class="cmd"><pre><code>config system interface
+    edit &quot;port3&quot;
+        set alias &quot;K3S-MONITORING&quot;
+        set ip 10.10.20.1 255.255.255.0
+        set allowaccess ping https ssh snmp
+    next
+end</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Ustawienie aliasu, adresu i dozwolonego dostępu na interfejsie.</p></div><div class="cmd"><pre><code>config firewall address
+    edit &quot;k3s-ingress&quot;
+        set subnet 10.10.20.10 255.255.255.255
+    next
+end</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Obiekt adresu, używany potem w regułach.</p></div><div class="cmd"><pre><code>config firewall policy
+    edit 0
+        set name &quot;MGMT-to-K3S&quot;
+        set srcintf &quot;port2&quot;
+        set dstintf &quot;port3&quot;
+        set srcaddr &quot;all&quot;
+        set dstaddr &quot;k3s-ingress&quot;
+        set action accept
+        set schedule &quot;always&quot;
+        set service &quot;HTTPS&quot; &quot;SSH&quot;
+        set logtraffic all
+    next
+end</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Nowa reguła firewalla (edit 0 = następny wolny numer).</p></div><div class="cmd"><pre><code>show firewall policy</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Konfiguracja reguł (tylko wartości zmienione względem domyślnych).</p></div><div class="cmd"><pre><code>show full-configuration system interface port3</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Pełna konfiguracja obiektu razem z wartościami domyślnymi.</p></div><div class="cmd"><pre><code>show firewall policy | grep -f K3S</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Filtrowanie wyniku: -f pokazuje cały blok, w którym jest dopasowanie.</p></div><div class="cmd"><pre><code>abort</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Wyjście z bloku config bez zapisywania zmian.</p></div></details>
+<details class="clig"><summary><span>Routing</span><small>Tablica routingu i protokoły dynamiczne</small></summary><div class="cmd"><pre><code>get router info routing-table all</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Pełna tablica routingu (trasy statyczne, podłączone, dynamiczne).</p></div><div class="cmd"><pre><code>get router info routing-table details 10.10.30.5</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Którą trasą pójdzie ruch do konkretnego adresu.</p></div><div class="cmd"><pre><code>get router info ospf neighbor</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Sąsiedzi OSPF i stan sąsiedztwa.</p></div><div class="cmd"><pre><code>get router info bgp summary</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Sesje BGP i liczba otrzymanych prefiksów.</p></div><div class="cmd"><pre><code>get system arp</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Tablica ARP: które adresy IP i MAC widać na interfejsach.</p></div></details>
+<details class="clig"><summary><span>Testy łączności</span><small>Ping i traceroute z samego firewalla</small></summary><div class="cmd"><pre><code>execute ping-options source 10.10.20.1
+execute ping 10.10.20.10</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Ping z wybranego adresu źródłowego (ważne przy testach przez tunel VPN).</p></div><div class="cmd"><pre><code>execute traceroute 1.1.1.1</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Ścieżka do celu.</p></div><div class="cmd"><pre><code>execute ping-options reset</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Przywrócenie domyślnych opcji pinga.</p></div></details>
+<details class="clig"><summary><span>Sesje</span><small>Aktywne połączenia przechodzące przez firewall</small></summary><div class="cmd"><pre><code>diagnose sys session filter clear
+diagnose sys session filter dst 10.10.20.10
+diagnose sys session filter dport 443
+diagnose sys session list</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Lista sesji pasujących do filtra: kto, dokąd, która reguła, NAT, liczniki.</p></div><div class="cmd"><pre><code>diagnose sys session stat</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Statystyki tabeli sesji.</p></div><div class="cmd warn"><pre><code>diagnose sys session clear</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>⚠ Usuwa sesje pasujące do filtra (bez filtra: WSZYSTKIE). Na produkcji ostrożnie.</p></div></details>
+<details class="clig"><summary><span>Diagnostyka ruchu: debug flow</span><small>Najważniejsze narzędzie: pokazuje krok po kroku, co firewall zrobił z pakietem i którą regułą go przepuścił albo odrzucił</small></summary><div class="cmd"><pre><code>diagnose debug reset
+diagnose debug flow filter clear
+diagnose debug flow filter addr 10.10.20.10
+diagnose debug flow filter proto 6
+diagnose debug flow show function-name enable
+diagnose debug console timestamp enable
+diagnose debug enable
+diagnose debug flow trace start 20</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Śledzenie 20 pakietów do/z 10.10.20.10 (TCP). W wyniku szukaj: „Allowed by Policy-X” albo „Denied by forward policy check”.</p></div><div class="cmd"><pre><code>diagnose debug disable
+diagnose debug reset</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Zawsze wyłącz debug po zakończeniu.</p></div></details>
+<details class="clig"><summary><span>Przechwytywanie pakietów: sniffer</span><small>Odpowiednik tcpdump w FortiOS</small></summary><div class="cmd"><pre><code>diagnose sniffer packet any &#x27;host 10.10.20.10 and port 443&#x27; 4 20 l</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Interfejs any, filtr w składni tcpdump, poziom 4 (nagłówki + nazwa interfejsu), 20 pakietów, czas lokalny. Przerwanie: Ctrl+C.</p></div><div class="cmd"><pre><code>diagnose sniffer packet port1 &#x27;icmp&#x27; 1</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Tylko ICMP na porcie WAN, poziom 1 (same nagłówki).</p></div></details>
+<details class="clig"><summary><span>VPN IPsec</span><small>Stan i diagnostyka tuneli</small></summary><div class="cmd"><pre><code>get vpn ipsec tunnel summary</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Krótki stan wszystkich tuneli: up/down, liczba selektorów.</p></div><div class="cmd"><pre><code>diagnose vpn ike gateway list</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Szczegóły fazy 1 (IKE): adres drugiej strony, wersja IKE, czas życia.</p></div><div class="cmd"><pre><code>diagnose vpn tunnel list</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Szczegóły fazy 2: selektory ruchu, SPI, liczniki pakietów, błędy.</p></div><div class="cmd"><pre><code>diagnose vpn ike log filter rem-addr4 203.0.113.20
+diagnose debug application ike -1
+diagnose debug enable</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Debug negocjacji IKE z konkretnym peerem (np. Sophos). Pokazuje, na którym etapie i dlaczego tunel się nie zestawia.</p></div></details>
+<details class="clig"><summary><span>HA</span><small>Klaster wysokiej dostępności</small></summary><div class="cmd"><pre><code>get system ha status</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Rola jednostek (primary/secondary), stan synchronizacji, monitorowane interfejsy.</p></div><div class="cmd"><pre><code>diagnose sys ha checksum cluster</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Sumy kontrolne konfiguracji na każdej jednostce. Różne wartości = konfiguracja nie jest zsynchronizowana.</p></div><div class="cmd"><pre><code>execute ha manage 1 admin</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Przełączenie konsoli na drugą jednostkę klastra.</p></div></details>
+<details class="clig"><summary><span>Logi i monitoring</span><small>Wysyłka na zewnątrz (Zabbix / Grafana w labie)</small></summary><div class="cmd"><pre><code>config log syslogd setting
+    set status enable
+    set server &quot;10.10.20.30&quot;
+end</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Wysyłanie logów do serwera syslog.</p></div><div class="cmd"><pre><code>config system snmp sysinfo
+    set status enable
+end</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Włączenie agenta SNMP (dalej: community lub użytkownik SNMPv3).</p></div><div class="cmd"><pre><code>diagnose log test</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Wygenerowanie testowych wpisów w logach, żeby sprawdzić, czy docierają do serwera.</p></div></details>
+<details class="clig"><summary><span>Utrzymanie</span><small>Kopie, aktualizacje, restart</small></summary><div class="cmd"><pre><code>execute backup config tftp fgt-lab.conf 10.10.10.50</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Kopia konfiguracji na serwer TFTP (są też warianty ftp i usb).</p></div><div class="cmd"><pre><code>diagnose autoupdate versions</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Wersje baz FortiGuard (IPS, AV) i data ostatniej aktualizacji.</p></div><div class="cmd"><pre><code>execute update-now</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>Wymuszenie aktualizacji baz FortiGuard.</p></div><div class="cmd warn"><pre><code>execute reboot</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>⚠ Restart urządzenia.</p></div><div class="cmd warn"><pre><code>execute factoryreset</code></pre><button class="cp" onclick="cp(this)">kopiuj</button><p>⚠ Przywrócenie ustawień fabrycznych, usuwa całą konfigurację.</p></div></details>
+    </div>
+  </div>
+</section>
+
 <section id="porownanie">
   <div class="wrap">
-    <div class="eyebrow">// 03 · MULTI-VENDOR</div>
+    <div class="eyebrow">// 05 · MULTI-VENDOR</div>
     <h2>FortiGate vs pfSense vs Sophos</h2>
     <p class="sub">Te same zadania, trzy filozofie. Porównanie na podstawie mojej pracy z każdą z platform.</p>
     <div class="tbl">
@@ -269,7 +372,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
 <section id="topologia">
   <div class="wrap">
-    <div class="eyebrow">// 04 · TOPOLOGIA LABU</div>
+    <div class="eyebrow">// 06 · TOPOLOGIA LABU</div>
     <h2>FortiGate-VM jako brzeg całego homelabu</h2>
     <p class="sub">FortiGate-VM (obraz OVF, VMware Workstation Pro) rozdziela ruch między segmenty. Każdy z moich labów dostaje własną strefę z politykami. Druga lokalizacja to Sophos Firewall na Proxmoxie, połączony tunelem IPsec. Logi i metryki z obu firewalli trafiają do stosu monitoringu.</p>
     <div class="topo">
@@ -348,7 +451,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
 <section id="scenariusze">
   <div class="wrap">
-    <div class="eyebrow">// 05 · SCENARIUSZE</div>
+    <div class="eyebrow">// 07 · SCENARIUSZE</div>
     <h2>Co testuję w labie</h2>
     <p class="sub">Każdy scenariusz ma opis celu, konfigurację (CLI i GUI) oraz test, który potwierdza, że działa.</p>
     <div class="road">
@@ -366,7 +469,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
 <section id="laby">
   <div class="wrap">
-    <div class="eyebrow">// 06 · POWIĄZANE LABY</div>
+    <div class="eyebrow">// 08 · POWIĄZANE LABY</div>
     <h2>Całe środowisko</h2>
     <p class="sub">Ten lab jest warstwą sieciową dla pozostałych projektów z mojego portfolio.</p>
     <div class="grid g3">
@@ -386,5 +489,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <span>FortiGate, FortiOS, pfSense i Sophos są znakami towarowymi ich właścicieli.</span>
   </div>
 </footer>
+<script>
+function cp(b){const t=b.parentElement.querySelector('code').innerText;
+ const ok=()=>{b.textContent='skopiowano';setTimeout(()=>b.textContent='kopiuj',1500)};
+ try{navigator.clipboard.writeText(t).then(ok,()=>{})}catch(e){}}
+</script>
 </body>
 </html>
