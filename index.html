@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Network Security & Firewall Lab · Grzegorz Starzyński</title>
+<meta name="description" content="Lab bezpieczeństwa sieci: FortiGate, pfSense, Sophos. Segmentacja, polityki, VPN, IPS i monitoring w środowisku z k3s i OpenStack.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0f14; --bg2:#10161d; --panel:#121a22; --line:#1f2a36; --line2:#2a3846;
+  --text:#d7e0ea; --muted:#8696a7; --dim:#5b6b7c;
+  --accent:#ff6b35; --accent2:#ffb347; --ok:#3ddc97; --info:#4fb3ff; --warn:#f5c542;
+  --mono:'JetBrains Mono',ui-monospace,monospace; --sans:'IBM Plex Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;font-size:16px;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(255,107,53,.10),transparent 55%),radial-gradient(ellipse at 90% 30%,rgba(79,179,255,.07),transparent 50%),linear-gradient(180deg,rgba(11,15,20,.55),rgba(11,15,20,.92));pointer-events:none;z-index:-1}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:10;background:rgba(11,15,20,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--text);display:flex;align-items:center;gap:10px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok);animation:pulse 2.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+nav ul{list-style:none;display:flex;gap:22px}
+nav ul a{color:var(--muted);font-size:14px;font-family:var(--mono)}
+nav ul a:hover{color:var(--text);text-decoration:none}
+@media(max-width:820px){nav ul{display:none}}
+
+/* hero */
+header.hero{padding:96px 0 72px}
+.tag{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(255,107,53,.4);padding:5px 12px;border-radius:999px;background:rgba(255,107,53,.06)}
+h1{font-size:clamp(36px,6vw,64px);line-height:1.05;letter-spacing:-.02em;margin:22px 0 18px;font-weight:700}
+h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:19px;color:var(--muted);max-width:720px}
+.cta{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:14px;padding:11px 18px;border-radius:8px;border:1px solid var(--line2);color:var(--text);background:var(--panel)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#140700;font-weight:700}
+.btn:hover{text-decoration:none;filter:brightness(1.12)}
+.term{margin-top:48px;background:#070a0e;border:1px solid var(--line2);border-radius:12px;overflow:hidden;font-family:var(--mono);font-size:13.5px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.term .bar{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);background:#0d1218}
+.term .bar i{width:11px;height:11px;border-radius:50%;background:#2a3542}
+.term .bar i:nth-child(1){background:#ff5f56}.term .bar i:nth-child(2){background:#ffbd2e}.term .bar i:nth-child(3){background:#27c93f}
+.term .bar b{margin-left:10px;font-weight:400;color:var(--dim);font-size:12px}
+.term pre{padding:18px 20px;color:#b9c7d5;overflow-x:auto;line-height:1.7}
+.p{color:var(--ok)}.c{color:var(--dim)}.k{color:var(--accent2)}.v{color:var(--info)}
+
+/* sections */
+section{padding:72px 0;border-top:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);color:var(--accent);font-size:13px;letter-spacing:.08em}
+h2{font-size:clamp(28px,4vw,38px);letter-spacing:-.01em;margin:8px 0 14px}
+h3{font-size:19px;margin-bottom:8px}
+.sub{color:var(--muted);max-width:760px;margin-bottom:36px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:22px;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--line2);transform:translateY(-2px)}
+.card p,.card li{color:var(--muted);font-size:15px}
+.card ul{padding-left:18px;margin-top:6px}
+.ico{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid var(--line2);border-radius:6px;padding:3px 8px;display:inline-block;margin-bottom:12px}
+
+/* stats */
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.stat .n{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--text)}
+.stat .n small{font-size:15px;color:var(--accent2);margin-left:4px}
+.stat .l{color:var(--muted);font-size:13.5px;margin-top:2px}
+
+/* spec table */
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:12px;color:var(--dim);font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+td:first-child{color:var(--muted)}
+td.mono{font-family:var(--mono);color:var(--text)}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;overflow-x:auto}
+.cmp td{vertical-align:top}
+.cmp td:not(:first-child){color:var(--text)}
+.cmp th.fg{color:var(--accent)} .cmp th.pf{color:var(--info)} .cmp th.so{color:var(--ok)}
+
+.note{border-left:3px solid var(--warn);background:rgba(245,197,66,.06);padding:14px 18px;border-radius:0 8px 8px 0;color:var(--muted);font-size:14.5px;margin-top:22px}
+.note b{color:var(--warn)}
+
+/* topology */
+.topo{background:#080b10;border:1px solid var(--line2);border-radius:14px;padding:18px;overflow-x:auto}
+.topo svg{display:block;min-width:820px;width:100%;height:auto}
+
+/* roadmap */
+.road{display:grid;gap:12px}
+.step{display:grid;grid-template-columns:44px 1fr auto;gap:16px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.step .num{font-family:var(--mono);color:var(--dim);font-size:13px;padding-top:2px}
+.step h4{font-size:16px;margin-bottom:3px}
+.step p{color:var(--muted);font-size:14.5px}
+.badge{font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:999px;white-space:nowrap;border:1px solid}
+.b-plan{color:var(--muted);border-color:var(--line2)}
+.b-wip{color:var(--warn);border-color:rgba(245,197,66,.45);background:rgba(245,197,66,.07)}
+.b-done{color:var(--ok);border-color:rgba(61,220,151,.45);background:rgba(61,220,151,.07)}
+
+.repo{display:flex;flex-direction:column;gap:6px}
+.repo .name{font-family:var(--mono);font-size:15px;color:var(--text)}
+.repo:hover{text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-family:var(--mono);font-size:11.5px;color:var(--muted);border:1px solid var(--line2);border-radius:5px;padding:2px 7px}
+
+footer{border-top:1px solid var(--line);padding:36px 0 48px;color:var(--dim);font-size:13.5px;font-family:var(--mono)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><span class="dot"></span>netsec-lab://grzegorz</a>
+    <ul>
+      <li><a href="#fortigate">FortiGate 1100E</a></li>
+      <li><a href="#porownanie">Porównanie</a></li>
+      <li><a href="#topologia">Topologia</a></li>
+      <li><a href="#scenariusze">Scenariusze</a></li>
+      <li><a href="#laby">Laby</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">● NGFW · Segmentacja · VPN · IPS · Monitoring</span>
+    <h1>Network Security<br>&amp; <span>Firewall Lab</span></h1>
+    <p class="lead">Praktyczny lab bezpieczeństwa sieci zbudowany na doświadczeniu z trzema platformami: <strong>FortiGate</strong> (produkcyjnie, sektor publiczny), <strong>pfSense</strong> i <strong>Sophos Firewall</strong>. Wirtualny FortiGate spina w jedną sieć moje pozostałe laby: klaster k3s z monitoringiem i chmurę OpenStack.</p>
+    <div class="cta">
+      <a class="btn primary" href="#topologia">Zobacz topologię →</a>
+      <a class="btn" href="https://github.com/programmingbygrzegorz/Network-security-firewall-lab">GitHub repo</a>
+    </div>
+
+    <div class="term">
+      <div class="bar"><i></i><i></i><i></i><b>FGT-LAB (FortiGate-VM64) · CLI</b></div>
+<pre><span class="p">FGT-LAB #</span> get system status
+<span class="k">Version:</span> FortiGate-VM64 <span class="v">v7.6.x</span>   <span class="c"># licencja ewaluacyjna, środowisko labowe</span>
+<span class="k">Operation Mode:</span> NAT
+<span class="k">Virtual domains status:</span> disabled
+
+<span class="p">FGT-LAB #</span> show system interface | grep alias
+    set alias <span class="v">"WAN"</span>
+    set alias <span class="v">"MGMT"</span>
+    set alias <span class="v">"K3S-MONITORING"</span>
+    set alias <span class="v">"OPENSTACK"</span>
+    set alias <span class="v">"DMZ"</span>
+<span class="c"># wszystkie adresy i nazwy w tym repo dotyczą wyłącznie labu</span></pre>
+    </div>
+  </div>
+</header>
+
+<section id="o-projekcie">
+  <div class="wrap">
+    <div class="eyebrow">// 01 · O PROJEKCIE</div>
+    <h2>Od produkcji do odtwarzalnego labu</h2>
+    <p class="sub">Na co dzień administruję firewallem klasy enterprise w dużej instytucji publicznej. Tego środowiska nie można pokazać, więc odtwarzam te same zagadnienia w labie, który każdy może przejrzeć i powtórzyć.</p>
+    <div class="grid g3">
+      <div class="card"><span class="ico">prod</span><h3>Doświadczenie produkcyjne</h3><p>Administracja FortiGate 1100E: polityki, NAT, VPN, aktualizacje FortiOS, analiza logów i rozwiązywanie problemów z łącznością w środowisku sektora publicznego.</p></div>
+      <div class="card"><span class="ico">multi-vendor</span><h3>Trzy platformy</h3><p>Wcześniejsza praca z pfSense i Sophos Firewall. Porównuję podejścia dostawców do tych samych problemów: segmentacji, inspekcji ruchu i zdalnego dostępu.</p></div>
+      <div class="card"><span class="ico">lab</span><h3>Lab jako kod i dokumentacja</h3><p>FortiGate-VM w VMware jako brzeg sieci dla k3s i OpenStack. Konfiguracje, diagramy i scenariusze testowe w repozytorium.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="fortigate">
+  <div class="wrap">
+    <div class="eyebrow">// 02 · PLATFORMA PRODUKCYJNA</div>
+    <h2>FortiGate 1100E: co potrafi ta platforma</h2>
+    <p class="sub">Firewall NGFW klasy enterprise / data center (2U) oparty o układy ASIC Fortinetu: procesor sieciowy <strong>NP6</strong> przyspiesza firewall, NAT i IPsec, a procesor treści <strong>CP9</strong> odciąża inspekcję SSL, IPS i antywirus.</p>
+
+    <div class="grid g4">
+      <div class="stat"><div class="n">80<small>Gbps</small></div><div class="l">Firewall (1518 B UDP)</div></div>
+      <div class="stat"><div class="n">12.5<small>Gbps</small></div><div class="l">IPS (enterprise mix)</div></div>
+      <div class="stat"><div class="n">9.8<small>Gbps</small></div><div class="l">NGFW</div></div>
+      <div class="stat"><div class="n">7.1<small>Gbps</small></div><div class="l">Threat Protection</div></div>
+      <div class="stat"><div class="n">48<small>Gbps</small></div><div class="l">IPsec VPN (512 B)</div></div>
+      <div class="stat"><div class="n">8<small>mln</small></div><div class="l">Równoczesnych sesji TCP</div></div>
+      <div class="stat"><div class="n">500<small>tys./s</small></div><div class="l">Nowych sesji TCP</div></div>
+      <div class="stat"><div class="n">3<small>µs</small></div><div class="l">Opóźnienie (64 B UDP)</div></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:22px">
+      <div class="tbl">
+        <table>
+          <tr><th>Interfejsy (fizyczne)</th><th></th></tr>
+          <tr><td>2× 40 GE</td><td class="mono">QSFP+</td></tr>
+          <tr><td>4× 25 GE</td><td class="mono">SFP28 / SFP+ / SFP</td></tr>
+          <tr><td>4× 10 GE</td><td class="mono">SFP+ / SFP</td></tr>
+          <tr><td>8× GE</td><td class="mono">SFP</td></tr>
+          <tr><td>16× GE</td><td class="mono">RJ45</td></tr>
+          <tr><td>2× GE MGMT/HA</td><td class="mono">RJ45</td></tr>
+          <tr><td>Zasilanie</td><td class="mono">2× PSU, hot-swap</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <span class="ico">FortiOS</span>
+        <h3>Kluczowe funkcje</h3>
+        <ul>
+          <li><b>Polityki NGFW</b>: kontrola aplikacji, filtrowanie WWW, polityki oparte o użytkowników i grupy</li>
+          <li><b>IPS, AV, inspekcja SSL/TLS</b> przyspieszane sprzętowo (CP9)</li>
+          <li><b>VPN</b>: IPsec site-to-site i dostęp zdalny (FortiClient)</li>
+          <li><b>VDOM</b>: logiczny podział jednego urządzenia na niezależne firewalle</li>
+          <li><b>HA (FGCP)</b>: klaster active-passive / active-active z synchronizacją sesji</li>
+          <li><b>SD-WAN</b>, routing dynamiczny (BGP, OSPF)</li>
+          <li><b>Security Fabric</b>: integracja z FortiAnalyzer, FortiManager, FortiSwitch, FortiAP</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note"><b>Zasada publikacji:</b> dane techniczne pochodzą z publicznego datasheetu Fortinet (FortiGate 1100E Series). Repozytorium nie zawiera żadnej konfiguracji, adresacji, nazw, zrzutów ekranu ani topologii z mojego miejsca pracy. Wszystkie przykłady pochodzą z wirtualnego FortiGate w labie. Model 1100E jest już platformą legacy (następca: seria 900G z NP7).</div>
+  </div>
+</section>
+
+<section id="porownanie">
+  <div class="wrap">
+    <div class="eyebrow">// 03 · MULTI-VENDOR</div>
+    <h2>FortiGate vs pfSense vs Sophos</h2>
+    <p class="sub">Te same zadania, trzy filozofie. Porównanie na podstawie mojej pracy z każdą z platform.</p>
+    <div class="tbl">
+      <table class="cmp">
+        <tr><th>Obszar</th><th class="fg">FortiGate (FortiOS)</th><th class="pf">pfSense</th><th class="so">Sophos Firewall (SFOS)</th></tr>
+        <tr><td>Model</td><td>Komercyjny NGFW, appliance lub VM, subskrypcje FortiGuard</td><td>Open source (FreeBSD), wersje CE i Plus (Netgate)</td><td>Komercyjny NGFW, appliance XGS lub VM, subskrypcje Xstream</td></tr>
+        <tr><td>Wydajność</td><td>Sprzętowe ASIC (NP/CP) odciążają firewall, VPN i inspekcję</td><td>Zależy od sprzętu x86 i CPU</td><td>Architektura Xstream z przyspieszaniem ścieżki ruchu (FastPath)</td></tr>
+        <tr><td>Zarządzanie</td><td>GUI + bardzo rozbudowane CLI, FortiManager dla wielu urządzeń</td><td>GUI WWW, konfiguracja w XML, pakiety (np. Suricata, HAProxy)</td><td>GUI WWW, Sophos Central do zarządzania w chmurze</td></tr>
+        <tr><td>Segmentacja</td><td>VLAN, strefy, VDOM (wirtualne firewalle)</td><td>VLAN, interfejsy, aliasy</td><td>VLAN, strefy</td></tr>
+        <tr><td>VPN</td><td>IPsec, dostęp zdalny przez FortiClient</td><td>IPsec, OpenVPN, WireGuard</td><td>IPsec, SSL VPN, Sophos Connect</td></tr>
+        <tr><td>Ekosystem</td><td>Security Fabric (switche, AP, analizator, EDR)</td><td>Niezależny, integracje przez pakiety</td><td>Synchronized Security z Sophos Endpoint (Heartbeat)</td></tr>
+        <tr><td>Gdzie się sprawdza</td><td>Duże organizacje, data center, wymagana wysoka przepustowość</td><td>MŚP, homelab, budżet i elastyczność</td><td>MŚP i średnie firmy z ekosystemem Sophos</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="topologia">
+  <div class="wrap">
+    <div class="eyebrow">// 04 · TOPOLOGIA LABU</div>
+    <h2>FortiGate-VM jako brzeg całego homelabu</h2>
+    <p class="sub">FortiGate-VM (obraz OVF, VMware) rozdziela ruch między segmenty. Każdy z moich labów dostaje własną strefę z politykami, a logi i metryki z firewalla trafiają do stosu monitoringu.</p>
+    <div class="topo">
+<svg viewBox="0 0 1060 520" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2a3846"/></marker>
+    <linearGradient id="fg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2a1409"/><stop offset="1" stop-color="#160a05"/></linearGradient>
+  </defs>
+  <!-- internet -->
+  <rect x="440" y="18" width="180" height="50" rx="25" fill="#10161d" stroke="#2a3846"/>
+  <text x="530" y="48" fill="#d7e0ea" font-size="14" text-anchor="middle">INTERNET</text>
+  <line x1="530" y1="68" x2="530" y2="112" stroke="#2a3846" stroke-width="2" marker-end="url(#a)"/>
+  <text x="540" y="96" fill="#5b6b7c" font-size="11">router domowy / NAT</text>
+  <!-- fortigate -->
+  <rect x="380" y="116" width="300" height="92" rx="12" fill="url(#fg)" stroke="#ff6b35" stroke-width="2"/>
+  <text x="530" y="148" fill="#ff6b35" font-size="16" font-weight="700" text-anchor="middle">FortiGate-VM64</text>
+  <text x="530" y="170" fill="#ffb347" font-size="12" text-anchor="middle">FortiOS 7.6 · VMware</text>
+  <text x="530" y="192" fill="#8696a7" font-size="11" text-anchor="middle">polityki · NAT · IPS · VPN · logi</text>
+  <!-- bus -->
+  <line x1="120" y1="262" x2="940" y2="262" stroke="#2a3846" stroke-width="2"/>
+  <line x1="530" y1="208" x2="530" y2="262" stroke="#ff6b35" stroke-width="2"/>
+  <!-- drops -->
+  <g stroke="#2a3846" stroke-width="2">
+    <line x1="120" y1="262" x2="120" y2="300"/><line x1="330" y1="262" x2="330" y2="300"/>
+    <line x1="590" y1="262" x2="590" y2="300"/><line x1="830" y1="262" x2="830" y2="300"/>
+  </g>
+  <!-- segments -->
+  <g font-size="12">
+    <rect x="30" y="300" width="180" height="150" rx="10" fill="#10161d" stroke="#5b6b7c"/>
+    <text x="120" y="326" fill="#d7e0ea" font-weight="700" text-anchor="middle">MGMT</text>
+    <text x="120" y="346" fill="#5b6b7c" text-anchor="middle">VLAN 10</text>
+    <text x="120" y="378" fill="#8696a7" text-anchor="middle">vCenter / ESXi</text>
+    <text x="120" y="398" fill="#8696a7" text-anchor="middle">Proxmox</text>
+    <text x="120" y="418" fill="#8696a7" text-anchor="middle">stacja admina</text>
+
+    <rect x="230" y="300" width="200" height="150" rx="10" fill="#0c1a14" stroke="#3ddc97"/>
+    <text x="330" y="326" fill="#3ddc97" font-weight="700" text-anchor="middle">K3S-MONITORING</text>
+    <text x="330" y="346" fill="#5b6b7c" text-anchor="middle">VLAN 20</text>
+    <text x="330" y="378" fill="#8696a7" text-anchor="middle">klaster k3s</text>
+    <text x="330" y="398" fill="#8696a7" text-anchor="middle">Prometheus · Grafana</text>
+    <text x="330" y="418" fill="#8696a7" text-anchor="middle">Zabbix</text>
+
+    <rect x="480" y="300" width="220" height="150" rx="10" fill="#0b1520" stroke="#4fb3ff"/>
+    <text x="590" y="326" fill="#4fb3ff" font-weight="700" text-anchor="middle">OPENSTACK</text>
+    <text x="590" y="346" fill="#5b6b7c" text-anchor="middle">VLAN 30 / 31</text>
+    <text x="590" y="378" fill="#8696a7" text-anchor="middle">controller · compute</text>
+    <text x="590" y="398" fill="#8696a7" text-anchor="middle">sieć provider</text>
+    <text x="590" y="418" fill="#8696a7" text-anchor="middle">floating IP</text>
+
+    <rect x="740" y="300" width="180" height="150" rx="10" fill="#1d1608" stroke="#f5c542"/>
+    <text x="830" y="326" fill="#f5c542" font-weight="700" text-anchor="middle">DMZ</text>
+    <text x="830" y="346" fill="#5b6b7c" text-anchor="middle">VLAN 40</text>
+    <text x="830" y="378" fill="#8696a7" text-anchor="middle">reverse proxy</text>
+    <text x="830" y="398" fill="#8696a7" text-anchor="middle">publikowane usługi</text>
+    <text x="830" y="418" fill="#8696a7" text-anchor="middle">VIP / port-forward</text>
+  </g>
+  <!-- log flow -->
+  <path d="M680 160 C 960 160, 980 230, 960 262" fill="none" stroke="#3ddc97" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <path d="M960 262 C 940 480, 420 500, 330 452" fill="none" stroke="#3ddc97" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#a)"/>
+  <text x="700" y="500" fill="#3ddc97" font-size="11">syslog · SNMP · API → Zabbix / Grafana</text>
+  <!-- vpn -->
+  <path d="M380 150 C 220 150, 120 170, 100 220" fill="none" stroke="#ffb347" stroke-width="1.5" stroke-dasharray="3 4"/>
+  <text x="70" y="140" fill="#ffb347" font-size="11">VPN (zdalny dostęp)</text>
+</svg>
+    </div>
+    <p style="color:var(--dim);font-size:13px;margin-top:10px;font-family:var(--mono)">Numery VLAN i segmenty to plan labu, docelowa adresacja będzie w <a href="docs/topology.md">docs/topology.md</a>.</p>
+  </div>
+</section>
+
+<section id="scenariusze">
+  <div class="wrap">
+    <div class="eyebrow">// 05 · SCENARIUSZE</div>
+    <h2>Co testuję w labie</h2>
+    <p class="sub">Każdy scenariusz ma opis celu, konfigurację (CLI i GUI) oraz test, który potwierdza, że działa.</p>
+    <div class="road">
+      <div class="step"><div class="num">01</div><div><h4>Wdrożenie FortiGate-VM w VMware</h4><p>Import OVF, przypisanie vNIC do sieci, licencja ewaluacyjna, dostęp do zarządzania, kopia konfiguracji.</p></div><span class="badge b-wip">w toku</span></div>
+      <div class="step"><div class="num">02</div><div><h4>Segmentacja i polityki między strefami</h4><p>VLAN-y, strefy, zasada najmniejszych uprawnień, domyślny deny, obiekty i grupy adresów.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">03</div><div><h4>Publikacja usług z k3s i OpenStack</h4><p>VIP / port-forward do Ingress w k3s i floating IP w OpenStack, z politykami tylko dla potrzebnych portów.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">04</div><div><h4>Profile bezpieczeństwa</h4><p>IPS, kontrola aplikacji, filtrowanie WWW, test na ruchu w labie (np. skan nmap, wzorce EICAR).</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">05</div><div><h4>VPN do labu</h4><p>Zdalny dostęp IPsec i tunel site-to-site do drugiego firewalla (pfSense) jako test współpracy różnych dostawców.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">06</div><div><h4>Monitoring firewalla</h4><p>SNMP i syslog do Zabbix, dashboard w Grafanie: sesje, CPU, przepustowość interfejsów, alerty.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">07</div><div><h4>Automatyzacja</h4><p>Konfiguracja przez REST API FortiOS i Ansible (kolekcja fortinet.fortios), kopie zapasowe w git.</p></div><span class="badge b-plan">plan</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="laby">
+  <div class="wrap">
+    <div class="eyebrow">// 06 · POWIĄZANE LABY</div>
+    <h2>Całe środowisko</h2>
+    <p class="sub">Ten lab jest warstwą sieciową dla pozostałych projektów z mojego portfolio.</p>
+    <div class="grid g3">
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/k3s-monitoring-lab"><span class="name">k3s-monitoring-lab</span><p>Lekki klaster Kubernetes z monitoringiem.</p><div class="chips"><span class="chip">k3s</span><span class="chip">monitoring</span></div></a>
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/openstack-lab"><span class="name">openstack-lab</span><p>Prywatna chmura OpenStack.</p><div class="chips"><span class="chip">openstack</span><span class="chip">IaaS</span></div></a>
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/Vmware-infrastructure-lab"><span class="name">Vmware-infrastructure-lab</span><p>Wirtualizacja, na której działa FortiGate-VM.</p><div class="chips"><span class="chip">vmware</span><span class="chip">esxi</span></div></a>
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/Proxmox-virtualization-lab"><span class="name">Proxmox-virtualization-lab</span><p>Druga platforma wirtualizacji.</p><div class="chips"><span class="chip">proxmox</span></div></a>
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/SecOpsLab"><span class="name">SecOpsLab</span><p>Operacje bezpieczeństwa.</p><div class="chips"><span class="chip">secops</span></div></a>
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/AutoOpsLab"><span class="name">AutoOpsLab</span><p>Automatyzacja operacji.</p><div class="chips"><span class="chip">automation</span></div></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Grzegorz Starzyński · Network Security &amp; Firewall Lab</span>
+    <span>FortiGate, FortiOS, pfSense i Sophos są znakami towarowymi ich właścicieli.</span>
+  </div>
+</footer>
+</body>
+</html>

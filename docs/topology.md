@@ -1,0 +1,21 @@
+# Topologia labu
+
+FortiGate-VM64 (FortiOS 7.6, VMware) jako brzeg sieci labu.
+
+| Segment | VLAN | Przeznaczenie |
+|---|---|---|
+| WAN | - | Uplink do routera domowego |
+| MGMT | 10 | ESXi / vCenter, Proxmox, stacja admina |
+| K3S-MONITORING | 20 | Klaster k3s, Prometheus, Grafana, Zabbix |
+| OPENSTACK | 30 / 31 | Controller, compute, sieć provider |
+| DMZ | 40 | Reverse proxy, publikowane usługi |
+
+Adresacja: do uzupełnienia (prywatne zakresy RFC 1918, wyłącznie labowe).
+
+## Przepływy
+
+- MGMT → wszystkie segmenty: zarządzanie (SSH, HTTPS)
+- K3S-MONITORING → FortiGate: SNMP polling
+- FortiGate → K3S-MONITORING: syslog
+- WAN → DMZ: tylko opublikowane usługi (VIP)
+- Domyślnie: deny między segmentami
