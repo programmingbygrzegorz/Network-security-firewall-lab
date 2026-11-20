@@ -12,6 +12,7 @@ Sophos Firewall działa jako VM na Proxmoxie ([Proxmox-virtualization-lab](https
 |---|---|
 | `index.html` | Strona projektu (GitHub Pages) |
 | `docs/fortigate-1100e-overview.md` | Funkcje platformy FortiGate 1100E na podstawie publicznego datasheetu |
+| `docs/glossary.md` | Słowniczek pojęć: interfejsy, NGFW, IPS, VPN, VDOM, HA, SD-WAN, Security Fabric |
 | `docs/comparison-pfsense-sophos-fortigate.md` | Porównanie trzech platform |
 | `docs/topology.md` | Topologia i adresacja labu |
 | `lab-fortigate-vm/` | Wdrożenie FortiGate-VM, konfiguracje i scenariusze |
