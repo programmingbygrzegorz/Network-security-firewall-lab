@@ -134,7 +134,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   <div class="wrap">
     <span class="tag">● NGFW · Segmentacja · VPN · IPS · Monitoring</span>
     <h1>Network Security<br>&amp; <span>Firewall Lab</span></h1>
-    <p class="lead">Praktyczny lab bezpieczeństwa sieci zbudowany na doświadczeniu z trzema platformami: <strong>FortiGate</strong> (produkcyjnie, sektor publiczny), <strong>pfSense</strong> i <strong>Sophos Firewall</strong>. Wirtualny FortiGate (VMware) spina w jedną sieć klaster k3s z monitoringiem i chmurę OpenStack, a <strong>Sophos Firewall</strong> działa jako VM na Proxmoxie w drugiej lokalizacji. Oba firewalle łączy tunel IPsec site-to-site.</p>
+    <p class="lead">Praktyczny lab bezpieczeństwa sieci zbudowany na doświadczeniu z trzema platformami: <strong>FortiGate</strong> (produkcyjnie, sektor publiczny), <strong>pfSense</strong> i <strong>Sophos Firewall</strong>. Wirtualny FortiGate (VMware Workstation Pro) spina w jedną sieć klaster k3s z monitoringiem i chmurę OpenStack, a <strong>Sophos Firewall</strong> działa jako VM na Proxmoxie w drugiej lokalizacji. Oba firewalle łączy tunel IPsec site-to-site.</p>
     <div class="cta">
       <a class="btn primary" href="#topologia">Zobacz topologię →</a>
       <a class="btn" href="https://github.com/programmingbygrzegorz/Network-security-firewall-lab">GitHub repo</a>
@@ -166,7 +166,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <div class="grid g3">
       <div class="card"><span class="ico">prod</span><h3>Doświadczenie produkcyjne</h3><p>Administracja FortiGate 1100E: polityki, NAT, VPN, aktualizacje FortiOS, analiza logów i rozwiązywanie problemów z łącznością w środowisku sektora publicznego.</p></div>
       <div class="card"><span class="ico">multi-vendor</span><h3>Trzy platformy</h3><p>Sophos Firewall działa u mnie jako VM na Proxmoxie, z pfSense pracowałem wcześniej. Porównuję podejścia dostawców do tych samych problemów: segmentacji, inspekcji ruchu i zdalnego dostępu.</p></div>
-      <div class="card"><span class="ico">lab</span><h3>Dwa firewalle, dwie lokalizacje</h3><p>FortiGate-VM (VMware) chroni k3s i OpenStack, Sophos Firewall (Proxmox) chroni drugą sieć domową. Konfiguracje, diagramy i scenariusze w repozytorium.</p></div>
+      <div class="card"><span class="ico">lab</span><h3>Dwa firewalle, dwie lokalizacje</h3><p>FortiGate-VM (VMware Workstation Pro) chroni k3s i OpenStack, Sophos Firewall (Proxmox) chroni drugą sieć domową. Konfiguracje, diagramy i scenariusze w repozytorium.</p></div>
     </div>
   </div>
 </section>
@@ -244,7 +244,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   <div class="wrap">
     <div class="eyebrow">// 04 · TOPOLOGIA LABU</div>
     <h2>FortiGate-VM jako brzeg całego homelabu</h2>
-    <p class="sub">FortiGate-VM (obraz OVF, VMware) rozdziela ruch między segmenty. Każdy z moich labów dostaje własną strefę z politykami. Druga lokalizacja to Sophos Firewall na Proxmoxie, połączony tunelem IPsec. Logi i metryki z obu firewalli trafiają do stosu monitoringu.</p>
+    <p class="sub">FortiGate-VM (obraz OVF, VMware Workstation Pro) rozdziela ruch między segmenty. Każdy z moich labów dostaje własną strefę z politykami. Druga lokalizacja to Sophos Firewall na Proxmoxie, połączony tunelem IPsec. Logi i metryki z obu firewalli trafiają do stosu monitoringu.</p>
     <div class="topo">
 <svg viewBox="0 0 1060 600" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
   <defs>
@@ -259,7 +259,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   <!-- fortigate -->
   <rect x="380" y="116" width="300" height="92" rx="12" fill="url(#fg)" stroke="#ff6b35" stroke-width="2"/>
   <text x="530" y="148" fill="#ff6b35" font-size="16" font-weight="700" text-anchor="middle">FortiGate-VM64</text>
-  <text x="530" y="170" fill="#ffb347" font-size="12" text-anchor="middle">FortiOS 7.6 · VMware</text>
+  <text x="530" y="170" fill="#ffb347" font-size="12" text-anchor="middle">FortiOS 7.6 · VMware Workstation Pro</text>
   <text x="530" y="192" fill="#8696a7" font-size="11" text-anchor="middle">polityki · NAT · IPS · VPN · logi</text>
   <!-- bus -->
   <line x1="120" y1="262" x2="940" y2="262" stroke="#2a3846" stroke-width="2"/>
@@ -274,7 +274,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <rect x="30" y="300" width="180" height="150" rx="10" fill="#10161d" stroke="#5b6b7c"/>
     <text x="120" y="326" fill="#d7e0ea" font-weight="700" text-anchor="middle">MGMT</text>
     <text x="120" y="346" fill="#5b6b7c" text-anchor="middle">VLAN 10</text>
-    <text x="120" y="378" fill="#8696a7" text-anchor="middle">vCenter / ESXi</text>
+    <text x="120" y="378" fill="#8696a7" text-anchor="middle">ESXi · vCenter</text>
     <text x="120" y="398" fill="#8696a7" text-anchor="middle">Proxmox</text>
     <text x="120" y="418" fill="#8696a7" text-anchor="middle">stacja admina</text>
 
@@ -325,7 +325,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <h2>Co testuję w labie</h2>
     <p class="sub">Każdy scenariusz ma opis celu, konfigurację (CLI i GUI) oraz test, który potwierdza, że działa.</p>
     <div class="road">
-      <div class="step"><div class="num">01</div><div><h4>Wdrożenie FortiGate-VM w VMware</h4><p>Import OVF, przypisanie vNIC do sieci, licencja ewaluacyjna, dostęp do zarządzania, kopia konfiguracji.</p></div><span class="badge b-wip">w toku</span></div>
+      <div class="step"><div class="num">01</div><div><h4>Wdrożenie FortiGate-VM w VMware Workstation Pro</h4><p>Import OVF, przypisanie kart do sieci VMnet, licencja ewaluacyjna, dostęp do zarządzania, kopia konfiguracji.</p></div><span class="badge b-wip">w toku</span></div>
       <div class="step"><div class="num">02</div><div><h4>Segmentacja i polityki między strefami</h4><p>VLAN-y, strefy, zasada najmniejszych uprawnień, domyślny deny, obiekty i grupy adresów.</p></div><span class="badge b-plan">plan</span></div>
       <div class="step"><div class="num">03</div><div><h4>Publikacja usług z k3s i OpenStack</h4><p>VIP / port-forward do Ingress w k3s i floating IP w OpenStack, z politykami tylko dla potrzebnych portów.</p></div><span class="badge b-plan">plan</span></div>
       <div class="step"><div class="num">04</div><div><h4>Profile bezpieczeństwa</h4><p>IPS, kontrola aplikacji, filtrowanie WWW, test na ruchu w labie (np. skan nmap, wzorce EICAR).</p></div><span class="badge b-plan">plan</span></div>
@@ -345,7 +345,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <div class="grid g3">
       <a class="card repo" href="https://github.com/programmingbygrzegorz/k3s-monitoring-lab"><span class="name">k3s-monitoring-lab</span><p>Lekki klaster Kubernetes z monitoringiem.</p><div class="chips"><span class="chip">k3s</span><span class="chip">monitoring</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/openstack-lab"><span class="name">openstack-lab</span><p>Prywatna chmura OpenStack.</p><div class="chips"><span class="chip">openstack</span><span class="chip">IaaS</span></div></a>
-      <a class="card repo" href="https://github.com/programmingbygrzegorz/Vmware-infrastructure-lab"><span class="name">Vmware-infrastructure-lab</span><p>Wirtualizacja, na której działa FortiGate-VM.</p><div class="chips"><span class="chip">vmware</span><span class="chip">esxi</span></div></a>
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/Vmware-infrastructure-lab"><span class="name">Vmware-infrastructure-lab</span><p>Hosty ESXi i vCenter w segmencie zarządzania labu.</p><div class="chips"><span class="chip">esxi</span><span class="chip">vcenter</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/Proxmox-virtualization-lab"><span class="name">Proxmox-virtualization-lab</span><p>Wirtualizacja, na której działa Sophos Firewall.</p><div class="chips"><span class="chip">proxmox</span><span class="chip">sophos</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/SecOpsLab"><span class="name">SecOpsLab</span><p>Operacje bezpieczeństwa.</p><div class="chips"><span class="chip">secops</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/AutoOpsLab"><span class="name">AutoOpsLab</span><p>Automatyzacja operacji.</p><div class="chips"><span class="chip">automation</span></div></a>

@@ -3,7 +3,7 @@
 **Strona projektu:** https://programmingbygrzegorz.github.io/Network-security-firewall-lab/
 
 Lab bezpieczeństwa sieci oparty na doświadczeniu z trzema platformami: **FortiGate** (produkcyjnie, sektor publiczny), **pfSense** i **Sophos Firewall**.
-Wirtualny FortiGate (FortiGate-VM64, VMware) jest brzegiem sieci dla moich pozostałych labów: [k3s-monitoring-lab](https://github.com/programmingbygrzegorz/k3s-monitoring-lab) i [openstack-lab](https://github.com/programmingbygrzegorz/openstack-lab).
+Wirtualny FortiGate (FortiGate-VM64, VMware Workstation Pro) jest brzegiem sieci dla moich pozostałych labów: [k3s-monitoring-lab](https://github.com/programmingbygrzegorz/k3s-monitoring-lab) i [openstack-lab](https://github.com/programmingbygrzegorz/openstack-lab).
 Sophos Firewall działa jako VM na Proxmoxie ([Proxmox-virtualization-lab](https://github.com/programmingbygrzegorz/Proxmox-virtualization-lab)) i tworzy drugą lokalizację, połączoną z FortiGate tunelem IPsec site-to-site.
 
 ## Zawartość
@@ -18,7 +18,7 @@ Sophos Firewall działa jako VM na Proxmoxie ([Proxmox-virtualization-lab](https
 
 ## Scenariusze
 
-1. Wdrożenie FortiGate-VM w VMware (OVF, licencja ewaluacyjna)
+1. Wdrożenie FortiGate-VM w VMware Workstation Pro (OVF, licencja ewaluacyjna)
 2. Segmentacja: VLAN-y, strefy, polityki między strefami
 3. Publikacja usług z k3s i OpenStack (VIP)
 4. Profile bezpieczeństwa: IPS, kontrola aplikacji, filtrowanie WWW
