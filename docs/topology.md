@@ -10,6 +10,10 @@ FortiGate-VM64 (FortiOS 7.6, VMware) jako brzeg sieci labu.
 | OPENSTACK | 30 / 31 | Controller, compute, sieć provider |
 | DMZ | 40 | Reverse proxy, publikowane usługi |
 
+## Lokalizacja B
+
+Sophos Firewall (VM na Proxmox) chroni drugą sieć domową. Tunel IPsec site-to-site FortiGate ↔ Sophos łączy obie lokalizacje.
+
 Adresacja: do uzupełnienia (prywatne zakresy RFC 1918, wyłącznie labowe).
 
 ## Przepływy

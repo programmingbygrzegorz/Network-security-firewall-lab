@@ -134,7 +134,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   <div class="wrap">
     <span class="tag">● NGFW · Segmentacja · VPN · IPS · Monitoring</span>
     <h1>Network Security<br>&amp; <span>Firewall Lab</span></h1>
-    <p class="lead">Praktyczny lab bezpieczeństwa sieci zbudowany na doświadczeniu z trzema platformami: <strong>FortiGate</strong> (produkcyjnie, sektor publiczny), <strong>pfSense</strong> i <strong>Sophos Firewall</strong>. Wirtualny FortiGate spina w jedną sieć moje pozostałe laby: klaster k3s z monitoringiem i chmurę OpenStack.</p>
+    <p class="lead">Praktyczny lab bezpieczeństwa sieci zbudowany na doświadczeniu z trzema platformami: <strong>FortiGate</strong> (produkcyjnie, sektor publiczny), <strong>pfSense</strong> i <strong>Sophos Firewall</strong>. Wirtualny FortiGate (VMware) spina w jedną sieć klaster k3s z monitoringiem i chmurę OpenStack, a <strong>Sophos Firewall</strong> działa jako VM na Proxmoxie w drugiej lokalizacji. Oba firewalle łączy tunel IPsec site-to-site.</p>
     <div class="cta">
       <a class="btn primary" href="#topologia">Zobacz topologię →</a>
       <a class="btn" href="https://github.com/programmingbygrzegorz/Network-security-firewall-lab">GitHub repo</a>
@@ -165,8 +165,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <p class="sub">Na co dzień administruję firewallem klasy enterprise w dużej instytucji publicznej. Tego środowiska nie można pokazać, więc odtwarzam te same zagadnienia w labie, który każdy może przejrzeć i powtórzyć.</p>
     <div class="grid g3">
       <div class="card"><span class="ico">prod</span><h3>Doświadczenie produkcyjne</h3><p>Administracja FortiGate 1100E: polityki, NAT, VPN, aktualizacje FortiOS, analiza logów i rozwiązywanie problemów z łącznością w środowisku sektora publicznego.</p></div>
-      <div class="card"><span class="ico">multi-vendor</span><h3>Trzy platformy</h3><p>Wcześniejsza praca z pfSense i Sophos Firewall. Porównuję podejścia dostawców do tych samych problemów: segmentacji, inspekcji ruchu i zdalnego dostępu.</p></div>
-      <div class="card"><span class="ico">lab</span><h3>Lab jako kod i dokumentacja</h3><p>FortiGate-VM w VMware jako brzeg sieci dla k3s i OpenStack. Konfiguracje, diagramy i scenariusze testowe w repozytorium.</p></div>
+      <div class="card"><span class="ico">multi-vendor</span><h3>Trzy platformy</h3><p>Sophos Firewall działa u mnie jako VM na Proxmoxie, z pfSense pracowałem wcześniej. Porównuję podejścia dostawców do tych samych problemów: segmentacji, inspekcji ruchu i zdalnego dostępu.</p></div>
+      <div class="card"><span class="ico">lab</span><h3>Dwa firewalle, dwie lokalizacje</h3><p>FortiGate-VM (VMware) chroni k3s i OpenStack, Sophos Firewall (Proxmox) chroni drugą sieć domową. Konfiguracje, diagramy i scenariusze w repozytorium.</p></div>
     </div>
   </div>
 </section>
@@ -244,9 +244,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   <div class="wrap">
     <div class="eyebrow">// 04 · TOPOLOGIA LABU</div>
     <h2>FortiGate-VM jako brzeg całego homelabu</h2>
-    <p class="sub">FortiGate-VM (obraz OVF, VMware) rozdziela ruch między segmenty. Każdy z moich labów dostaje własną strefę z politykami, a logi i metryki z firewalla trafiają do stosu monitoringu.</p>
+    <p class="sub">FortiGate-VM (obraz OVF, VMware) rozdziela ruch między segmenty. Każdy z moich labów dostaje własną strefę z politykami. Druga lokalizacja to Sophos Firewall na Proxmoxie, połączony tunelem IPsec. Logi i metryki z obu firewalli trafiają do stosu monitoringu.</p>
     <div class="topo">
-<svg viewBox="0 0 1060 520" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
+<svg viewBox="0 0 1060 600" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2a3846"/></marker>
     <linearGradient id="fg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2a1409"/><stop offset="1" stop-color="#160a05"/></linearGradient>
@@ -303,9 +303,16 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   <path d="M680 160 C 960 160, 980 230, 960 262" fill="none" stroke="#3ddc97" stroke-width="1.5" stroke-dasharray="5 5"/>
   <path d="M960 262 C 940 480, 420 500, 330 452" fill="none" stroke="#3ddc97" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#a)"/>
   <text x="700" y="500" fill="#3ddc97" font-size="11">syslog · SNMP · API → Zabbix / Grafana</text>
-  <!-- vpn -->
-  <path d="M380 150 C 220 150, 120 170, 100 220" fill="none" stroke="#ffb347" stroke-width="1.5" stroke-dasharray="3 4"/>
-  <text x="70" y="140" fill="#ffb347" font-size="11">VPN (zdalny dostęp)</text>
+  <!-- sophos site -->
+  <rect x="30" y="112" width="250" height="100" rx="12" fill="#0c1a14" stroke="#3ddc97" stroke-width="2"/>
+  <text x="155" y="142" fill="#3ddc97" font-size="15" font-weight="700" text-anchor="middle">Sophos Firewall</text>
+  <text x="155" y="163" fill="#8696a7" font-size="11" text-anchor="middle">VM na Proxmox · lokalizacja B</text>
+  <text x="155" y="183" fill="#8696a7" font-size="11" text-anchor="middle">sieć domowa · usługi</text>
+  <line x1="280" y1="162" x2="380" y2="162" stroke="#ffb347" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="330" y="152" fill="#ffb347" font-size="11" text-anchor="middle">IPsec</text>
+  <text x="330" y="180" fill="#ffb347" font-size="10" text-anchor="middle">site-to-site</text>
+  <!-- remote access -->
+  <text x="530" y="560" fill="#ffb347" font-size="11" text-anchor="middle">zdalny dostęp: FortiClient · Sophos Connect</text>
 </svg>
     </div>
     <p style="color:var(--dim);font-size:13px;margin-top:10px;font-family:var(--mono)">Numery VLAN i segmenty to plan labu, docelowa adresacja będzie w <a href="docs/topology.md">docs/topology.md</a>.</p>
@@ -322,9 +329,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <div class="step"><div class="num">02</div><div><h4>Segmentacja i polityki między strefami</h4><p>VLAN-y, strefy, zasada najmniejszych uprawnień, domyślny deny, obiekty i grupy adresów.</p></div><span class="badge b-plan">plan</span></div>
       <div class="step"><div class="num">03</div><div><h4>Publikacja usług z k3s i OpenStack</h4><p>VIP / port-forward do Ingress w k3s i floating IP w OpenStack, z politykami tylko dla potrzebnych portów.</p></div><span class="badge b-plan">plan</span></div>
       <div class="step"><div class="num">04</div><div><h4>Profile bezpieczeństwa</h4><p>IPS, kontrola aplikacji, filtrowanie WWW, test na ruchu w labie (np. skan nmap, wzorce EICAR).</p></div><span class="badge b-plan">plan</span></div>
-      <div class="step"><div class="num">05</div><div><h4>VPN do labu</h4><p>Zdalny dostęp IPsec i tunel site-to-site do drugiego firewalla (pfSense) jako test współpracy różnych dostawców.</p></div><span class="badge b-plan">plan</span></div>
-      <div class="step"><div class="num">06</div><div><h4>Monitoring firewalla</h4><p>SNMP i syslog do Zabbix, dashboard w Grafanie: sesje, CPU, przepustowość interfejsów, alerty.</p></div><span class="badge b-plan">plan</span></div>
-      <div class="step"><div class="num">07</div><div><h4>Automatyzacja</h4><p>Konfiguracja przez REST API FortiOS i Ansible (kolekcja fortinet.fortios), kopie zapasowe w git.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">05</div><div><h4>IPsec site-to-site FortiGate ↔ Sophos</h4><p>Tunel między dwoma dostawcami: zgodne propozycje IKEv2, selektory ruchu, routing między lokalizacjami, polityki po obu stronach i diagnostyka zestawiania tunelu.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">06</div><div><h4>Zdalny dostęp VPN</h4><p>Dostęp do labu z zewnątrz: FortiClient (IPsec) i Sophos Connect, porównanie konfiguracji.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">07</div><div><h4>Monitoring obu firewalli</h4><p>SNMP i syslog z FortiGate i Sophosa do Zabbix, dashboard w Grafanie: sesje, CPU, przepustowość interfejsów, stan tunelu, alerty.</p></div><span class="badge b-plan">plan</span></div>
+      <div class="step"><div class="num">08</div><div><h4>Automatyzacja</h4><p>Konfiguracja przez REST API FortiOS i Ansible (kolekcja fortinet.fortios), kopie zapasowe w git.</p></div><span class="badge b-plan">plan</span></div>
     </div>
   </div>
 </section>
@@ -338,7 +346,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <a class="card repo" href="https://github.com/programmingbygrzegorz/k3s-monitoring-lab"><span class="name">k3s-monitoring-lab</span><p>Lekki klaster Kubernetes z monitoringiem.</p><div class="chips"><span class="chip">k3s</span><span class="chip">monitoring</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/openstack-lab"><span class="name">openstack-lab</span><p>Prywatna chmura OpenStack.</p><div class="chips"><span class="chip">openstack</span><span class="chip">IaaS</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/Vmware-infrastructure-lab"><span class="name">Vmware-infrastructure-lab</span><p>Wirtualizacja, na której działa FortiGate-VM.</p><div class="chips"><span class="chip">vmware</span><span class="chip">esxi</span></div></a>
-      <a class="card repo" href="https://github.com/programmingbygrzegorz/Proxmox-virtualization-lab"><span class="name">Proxmox-virtualization-lab</span><p>Druga platforma wirtualizacji.</p><div class="chips"><span class="chip">proxmox</span></div></a>
+      <a class="card repo" href="https://github.com/programmingbygrzegorz/Proxmox-virtualization-lab"><span class="name">Proxmox-virtualization-lab</span><p>Wirtualizacja, na której działa Sophos Firewall.</p><div class="chips"><span class="chip">proxmox</span><span class="chip">sophos</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/SecOpsLab"><span class="name">SecOpsLab</span><p>Operacje bezpieczeństwa.</p><div class="chips"><span class="chip">secops</span></div></a>
       <a class="card repo" href="https://github.com/programmingbygrzegorz/AutoOpsLab"><span class="name">AutoOpsLab</span><p>Automatyzacja operacji.</p><div class="chips"><span class="chip">automation</span></div></a>
     </div>
